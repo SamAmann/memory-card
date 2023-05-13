@@ -99,7 +99,7 @@ export default function App() {
     setScore(0);
     setClickedImages([]);
     setLoadPercentage(0);
-    (won === true) ? setNbImg(nbImg + 3) : setNbImg(nbImg);
+    won === true ? setNbImg(nbImg + 3) : fetchImages(6);
   }
 
   const shuffleImages = () => {
