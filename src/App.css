@@ -1,16 +1,3 @@
-root {
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    color: #333;
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 body {
     background-image: url('https://apod.nasa.gov/apod/image/2301/jwst-ngc346-800.png');
     background-size: cover;
@@ -30,10 +17,8 @@ p {
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 24px;
     font-weight: 500;
-    margin: 0;
-    padding: 0;
 }
 
 h2 {
@@ -72,23 +57,76 @@ h6 {
 }
 
 .app-wrapper {
-    max-height: 100vh;
-    max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: space-between;
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
 }
 
 header,
-footer,
-.scoreboard {
+footer {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     width: 100%;
     padding: 0 20px;
     box-sizing: border-box;
     height: 60px;
+    background-color: #000000e0;
+    color: #ffffff;
+    gap: 5rem;
+    wrap: no-wrap;
+}
+
+.scoreboard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    border-radius: 50px;
+    padding: 2rem;
+    margin: 2rem;
+    box-sizing: border-box;
+    height: 60px;
     background-color: #00000000;
     color: #ffffff;
+}
+
+.score-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    border-radius: 50px;
+    padding: 2rem;
+    margin: 2rem;
+    box-sizing: border-box;
+    height: 60px;
+    background-color: #000000d2;
+    color: #ffffff;
+}
+
+.welcome-popup {
+    background-color: #ffffff;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    z-index: 9999;
+    padding: 2rem;
+    gap: 1rem;
+    box-sizing: border-box;
+    min-height: 50vh;
 }
 
 .loading-popup {
@@ -96,19 +134,79 @@ footer,
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff;
+    background-color: #ffffff00;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     z-index: 9999;
+}
+
+.loading-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    display: block;
+    animation: spin 10s linear infinite;
+}
+
+.loading-bar {
+    height: 10px;
+    width: 100%;
+    background-color: #000000b9;
+    border-radius: 5px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-bar-fill {
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes mirrorX {
+    0% {
+        transform: scaleX(1);
+    }
+
+    100% {
+        transform: scaleX(-1);
+    }
+}
+
+.primary-btn {
+    background-color: #000000b9;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.primary-btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+    transform: scale(1.05);
 }
 
 main {
     display: flex;
     justify-items: center;
     align-items: center;
-    margin: 0 auto;
-    max-width: 80rem;
+    justify-content: space-around;
     height: 100%;
 }
 
@@ -118,7 +216,7 @@ main {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     grid-auto-rows: minmax(15rem, auto);
     grid-gap: 20px;
     justify-content: center;
@@ -127,6 +225,8 @@ main {
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
+    max-width: 900px;
+    grid-auto-flow: dense;
 }
 
 
@@ -140,10 +240,12 @@ main {
     border-radius: 5px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, .2);
     padding: 1rem;
-    margin: 3rem;
+    margin: 1rem;
     box-sizing: border-box;
     align-self: stretch;
     gap: 1rem;
+    min-width: 12rem;
+    cursor: pointer;
 }
 
 .card:hover {

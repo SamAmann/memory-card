@@ -6,22 +6,48 @@ import Header from './components/header.js';
 import Scoreboard from './components/scoreboard.js';
 import Main from './components/main.js';
 import Footer from './components/footer.js';
-import { NASA_API_KEY } from './config.js';
+import config from './config.js'
 import Swal from 'sweetalert2';
 
-
-
 export default function App() {
-  const [isLoading, setIsLoading] = useState();
-  const [nbImg, setNbImg] = useState(8);
+  const [isLoading, setIsLoading] = useState(true);
+  const [nbImg, setNbImg] = useState(6);
   const [images, setImages] = useState([]);
   const [clickedImages, setClickedImages] = useState([]);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const [loadPercentage, setLoadPercentage] = useState(0);
+  const [beginner, setBeginner] = useState(true);
 
   useEffect(() => {
     fetchImages(nbImg);
   }, [nbImg]);
+
+
+  async function fetchImages(nbImg) {
+    let fetchedImages = [];
+    while (fetchedImages.length < nbImg) {
+      try {
+        const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${config.NASA_API_KEY}&count=${nbImg - fetchedImages.length}`);
+        const data = await response.json();
+        const filteredData = data.filter((image) =>
+          !fetchedImages.some((fetchedImage) => fetchedImage.url === image.url) &&
+          !image.hasOwnProperty('copyright') &&
+          image.media_type === 'image'
+        );
+        fetchedImages.push(...filteredData);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoadPercentage(Math.round((fetchedImages.length / nbImg) * 100));
+      if (fetchedImages.length === nbImg) {
+        setIsLoading(false);
+        setImages(fetchedImages);
+        return;
+      };
+    };
+  }
+
 
   const handleImageClick = (image) => {
     try {
@@ -32,7 +58,9 @@ export default function App() {
           icon: 'error',
           title: 'You lost!',
           text: 'Better luck next time.',
-          confirmButtonText: 'Play again',
+          confirmButtonText: 'Restart!',
+          confirmButtonColor: '#000000b9',
+          allowOutsideClick: false,
         }).then((result) => {
           if (result.isConfirmed) {
             resetGame(false);
@@ -51,6 +79,8 @@ export default function App() {
             title: 'Congratulations!', // or 'You lost!'
             text: 'You won!', // or 'Better luck next time.'
             confirmButtonText: 'Next round!',
+            confirmButtonColor: '#000000b9',
+            allowOutsideClick: false,
           }).then((result) => {
             if (result.isConfirmed) {
               resetGame(true);
@@ -64,31 +94,13 @@ export default function App() {
     }
   };
 
-
   function resetGame(won) {
     setIsLoading(true);
     setScore(0);
     setClickedImages([]);
-    (won === true) ? setNbImg(nbImg + 2) : setNbImg(nbImg);
-    fetchImages(nbImg);
+    setLoadPercentage(0);
+    (won === true) ? setNbImg(nbImg + 3) : setNbImg(nbImg);
   }
-
-  async function fetchImages(nbImg) {
-    setIsLoading(true);
-    const fetchedImages = [];
-    while (fetchedImages.length < nbImg) {
-      const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&count=${nbImg - fetchedImages.length}`);
-      const data = await response.json();
-      const filteredData = data.filter((image) =>
-        !fetchedImages.some((fetchedImage) => fetchedImage.url === image.url) &&
-        !image.hasOwnProperty('copyright') &&
-        image.media_type === 'image'
-      );
-      fetchedImages.push(...filteredData);
-    }
-    setImages(fetchedImages);
-    setIsLoading(false);
-  };
 
   const shuffleImages = () => {
     const shuffledImages = [...images];
@@ -102,9 +114,21 @@ export default function App() {
   return (
     <div className="app-wrapper">
       {isLoading ? (
-        <div className="loading-popup">Loading...</div>
+        <div className="loading-popup">
+          <img className="loading-logo" src={`${process.env.PUBLIC_URL}/moon.png`} alt="loading" />
+
+          <div className="loading-bar">
+            <div className="loading-bar-fill" style={{ width: `${loadPercentage}%` }}></div>
+          </div>
+
+        </div>
       ) : (
         <>
+          <div className="welcome-popup" style={{ display: (highScore === 0 && beginner) ? "flex" : "none" }}>
+            <h1>Welcome!</h1>
+            <p>Click on an image to earn points, but don't click on any more than once!</p>
+            <button className="primary-btn" onClick={() => setBeginner(false)}>Start</button>
+          </div>
           <Header />
           <Scoreboard score={score} highScore={highScore} />
           <Main images={images} handleImageClick={handleImageClick} />
@@ -114,4 +138,3 @@ export default function App() {
     </div>
   );
 }
-
